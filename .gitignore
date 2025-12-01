@@ -1,0 +1,43 @@
+--- Python General ---
+
+pycache/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+
+--- Project Data Directories (Do NOT track these) ---
+
+We want to keep the repo clean. Users generate these locally.
+
+01_Source_PDFs/
+02_Processed_Pages/
+03_Candidate_Images/
+03a_Rejected_Images/
+05_Logs/
+
+--- Large Model Files ---
+
+GitHub block files > 100MB.
+
+It is better to provide a download link in README than commiting huge binaries.
+
+*.pt
+*.pth
+*.onnx
+
+Exception: Keep the directories structure if they are empty (optional)
+
+!models/yolo/.gitkeep
+
+!models/classifiers/.gitkeep
+
+--- IDE/OS Metadata ---
+
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
