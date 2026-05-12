@@ -1,6 +1,6 @@
 # Radiolarian Image Extraction & Analysis System
 
-An automated, end-to-end desktop application designed to extract and analyze radiolarian fossil images from academic PDF literature. This tool integrates PDF rendering, YOLO object detection, and ResNet image classification into a user-friendly GUI.
+An automated, end-to-end desktop application designed to extract and analyze radiolarian fossil images from academic PDF literature. Integrates PDF rendering, YOLO object detection, and CNN image classification into a user-friendly GUI.
 
 ---
 
@@ -14,7 +14,7 @@ Radiolarian-Image-Extractor/
 ├── backend_signals.py           # Thread communication
 ├── ui_main.py                   # GUI controller
 ├── ui_panels.py                 # Tab interface
-├── ui_widgets.py               # Custom UI components
+├── ui_widgets.py                # Custom UI components
 ├── utils.py                     # File system utilities
 ├── models/                      # Model weights
 │   ├── yolo/                    # YOLO detection models
@@ -29,14 +29,19 @@ Radiolarian-Image-Extractor/
 
 ### Core Logic
 - Multithreaded processing for PDF conversion and AI inference
+- Incremental processing with resume capability
+- Thread-safe queue-based communication
 
 ### UI Layer
-- Built with tkinter, featuring a responsive dashboard and results gallery
+- Built with tkinter
+- Responsive dashboard with progress tracking
+- Paginated results gallery
 
-### Backend
+### Backend Components
+
 | Component | Description |
 |-----------|-------------|
-| PdfConverter | Renders high-resolution images from PDFs |
+| PdfConverter | Renders high-resolution images from PDFs using PyMuPDF |
 | ObjectDetector | Uses YOLOv11/v8 for fossil localization |
 | ImageClassifier | Filters noise using ResNet50/MobileNet |
 
@@ -45,7 +50,7 @@ Radiolarian-Image-Extractor/
 ## Installation
 
 ### Prerequisites
-- Python 3.9 or higher
+- Python 3.9+
 - CUDA-capable GPU (Recommended)
 
 ### Steps
@@ -60,6 +65,7 @@ pip install -r requirements.txt
 
 # Setup model directories
 mkdir -p models/yolo models/classifiers
+
 # Place your YOLO weights (e.g., yolo11x.pt) in models/yolo/
 # Place your classifier weights (e.g., resnet50.pth) in models/classifiers/
 ```
@@ -74,18 +80,19 @@ mkdir -p models/yolo models/classifiers
 python main.py
 ```
 
-**Workflow:**
-1. **Import** - Load PDF documents in the "Processing Pipeline" tab
+### Workflow
+
+1. **Import** - Load PDF documents in the "Pipeline" tab
 2. **Convert** - Convert PDF pages to images (multi-core processing)
 3. **Detect** - Run YOLO detection to crop fossil candidates
-4. **Filter** - Apply the classifier to remove non-fossil noise
-5. **Analyze** - Review the clean dataset in the "Results Gallery"
+4. **Filter** - Apply classifier to remove non-fossil noise
+5. **Analyze** - Review results in the "Gallery" tab
 
 ---
 
-## Model Training (Image Classification)
+## Model Training
 
-For training custom classifiers with class weights and multi-metric evaluation:
+Train custom classifiers with class weights and multi-metric evaluation:
 
 ```bash
 cd model_training/image_classification
@@ -103,7 +110,21 @@ python train.py
 python evaluate.py
 ```
 
-**Configuration:** Edit `config.py` to adjust hyperparameters (epochs, batch size, learning rate, model list).
+### Supported Models
+- ResNet (18, 50)
+- EfficientNet (B0, B2)
+- MobileNet (V2, V3)
+- VGG16
+- DenseNet121
+- ResNeXt50
+- ShuffleNet
+- SqueezeNet
+
+### Configuration
+Edit `config.py` to adjust hyperparameters:
+- Epochs, batch size, learning rate
+- Model list to train
+- Train/validation split ratio
 
 ---
 
@@ -116,9 +137,3 @@ python evaluate.py
 | `03_Candidate_Images/` | Detected fossil candidates |
 | `03a_Rejected_Images/` | Filtered noise |
 | `05_Logs/` | Processing logs |
-
----
-
-## License
-
-MIT License
