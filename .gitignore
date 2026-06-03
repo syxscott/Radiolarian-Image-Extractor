@@ -1,43 +1,66 @@
---- Python General ---
-
-pycache/
+# ===== Python =====
+__pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
 env/
 venv/
+.venv/
 .env
+*.egg-info/
+build/
+dist/
 
---- Project Data Directories (Do NOT track these) ---
+# ===== Project data directories (generated locally by users) =====
+# Ignore all CONTENT but keep the .gitkeep files so the directory
+# structure is preserved on fresh clones.
+01_Source_PDFs/*
+02_Processed_Pages/*
+03_Candidate_Images/*
+03a_Rejected_Images/*
+05_Logs/*
+!01_Source_PDFs/.gitkeep
+!02_Processed_Pages/.gitkeep
+!03_Candidate_Images/.gitkeep
+!03a_Rejected_Images/.gitkeep
+!05_Logs/.gitkeep
 
-We want to keep the repo clean. Users generate these locally.
-
-01_Source_PDFs/
-02_Processed_Pages/
-03_Candidate_Images/
-03a_Rejected_Images/
-05_Logs/
-
---- Large Model Files ---
-
-GitHub block files > 100MB.
-
-It is better to provide a download link in README than commiting huge binaries.
-
+# ===== Large model weights (GitHub blocks files > 100 MB) =====
+# Provide a download link in the README instead of committing binaries.
 *.pt
 *.pth
 *.onnx
+*.h5
+*.pb
 
-Exception: Keep the directories structure if they are empty (optional)
-
+# Keep the empty model folder structure
 !models/yolo/.gitkeep
-
 !models/classifiers/.gitkeep
 
---- IDE/OS Metadata ---
+# ===== Model training generated artefacts =====
+model_training/image_classification/classification_dataset/
+model_training/image_classification/saved_models/
+model_training/image_classification/pretrained_weights/
+model_training/image_classification/checkpoints/
+model_training/image_classification/training_logs/
+model_training/ultralytics/
+model_training/yolov5/
+*.csv
 
+# ===== IDE / OS metadata =====
 .idea/
 .vscode/
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
+*~
+
+# ===== Development / testing artefacts =====
+screenshot_*.png
+ui_preview_*.png
+*.log
+.pytest_cache/
+.coverage
+htmlcov/

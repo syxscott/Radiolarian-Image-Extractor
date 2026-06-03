@@ -84,17 +84,40 @@ def create_dataloaders():
     return train_loader, val_loader, dataset_sizes, class_names
 
 def compute_class_weights(loader, num_classes, device):
-    """Compute class weights for CrossEntropyLoss based on training set distribution"""
+    """Compute class weights for CrossEntropyLoss based on training set distribution.
+
+    Previously this iterated the entire DataLoader just to read labels,
+    which (a) loaded and augmented every image, wasting an epoch's worth
+    of IO+CPU, and (b) advanced the random state used by RandomResizedCrop /
+    RandomHorizontalFlip / etc., subtly changing the actual training
+    distribution.
+
+    The fix: ImageFolder exposes `targets` (a flat list of integer labels)
+    directly — counting them takes microseconds and touches no images.
+    Fallback to the slow path only for non-ImageFolder datasets.
+    """
+    dataset = loader.dataset
     class_counts = [0] * num_classes
-    for _, labels in loader:
-        for label in labels:
-            class_counts[label.item()] += 1
-    
+
+    if hasattr(dataset, 'targets'):
+        # Fast path — ImageFolder / DatasetFolder
+        for t in dataset.targets:
+            class_counts[int(t)] += 1
+    else:
+        # Slow fallback — generic Dataset without targets attribute
+        for _, labels in loader:
+            for label in labels:
+                class_counts[label.item()] += 1
+
     # Inverse weight: n_samples / (n_classes * n_samples_of_class)
+    # Guard against empty classes to avoid ZeroDivisionError.
     total = sum(class_counts)
-    weights = [total / (num_classes * count) for count in class_counts]
-    
+    weights = [
+        (total / (num_classes * count)) if count > 0 else 0.0
+        for count in class_counts
+    ]
+
     print(f"Class distribution: {class_counts}")
     print(f"Class weights: {[f'{w:.2f}' for w in weights]}")
-    
+
     return torch.tensor(weights, dtype=torch.float32).to(device)
